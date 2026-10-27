@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      :root { color-scheme: light dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+      body { margin: 0; padding: 12px; color: CanvasText; background: Canvas; }
+      .card { display: grid; gap: 12px; max-width: 640px; }
+      .eyebrow { color: GrayText; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+      h2 { margin: 0; font-size: 17px; line-height: 1.35; }
+      dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 20px; margin: 0; }
+      dt { color: GrayText; font-size: 12px; }
+      dd { margin: 2px 0 0; font-size: 14px; font-weight: 600; }
+      .scope { margin: 0; color: GrayText; font-size: 14px; line-height: 1.45; }
+      .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+      button { border: 1px solid color-mix(in srgb, CanvasText 24%, transparent); border-radius: 8px; background: transparent; color: CanvasText; cursor: pointer; font: inherit; font-size: 13px; font-weight: 650; padding: 8px 10px; }
+      button:hover, button:focus-visible { background: color-mix(in srgb, CanvasText 10%, transparent); outline: none; }
+      @media (max-width: 420px) { dl { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <main class="card" aria-live="polite">
+      <div class="eyebrow" id="issue-id">Linear issue</div>
+      <h2 id="title">Loading issue…</h2>
+      <dl>
+        <div><dt>Status</dt><dd id="status">—</dd></div>
+        <div><dt>Assignee</dt><dd id="assignee">—</dd></div>
+        <div><dt>Cycle</dt><dd id="cycle">—</dd></div>
+        <div><dt>Priority</dt><dd id="priority">—</dd></div>
+      </dl>
+      <p class="scope" id="scope"></p>
+      <div class="actions" aria-label="Issue actions">
+        <button type="button" data-action="review">Review brief</button>
+        <button type="button" data-action="figma" id="figma-action" hidden>Review Figma context</button>
+        <button type="button" data-action="comment">Draft progress comment</button>
+        <button type="button" data-action="field">Prepare field change</button>
+      </div>
+    </main>
+    <script>
+      let issue = null;
+      let nextRequestId = 1;
+      const pending = new Map();
+
+      function request(method, params) {
+        const id = nextRequestId++;
+        window.parent.postMessage({ jsonrpc: "2.0", id, method, params }, "*");
+        return new Promise((resolve, reject) => pending.set(id, { resolve, reject }));
+      }
+
+      function render(data) {
+        if (!data) return;
+        issue = data;
+        document.getElementById("issue-id").textContent = data.issueId || "Linear issue";
+        document.getElementById("title").textContent = data.title || "Untitled issue";
+        document.getElementById("status").textContent = data.status || "—";
+        document.getElementById("assignee").textContent = data.assignee || "—";
+        document.getElementById("cycle").textContent = data.cycle || "—";
+        document.getElementById("priority").textContent = data.priority || "—";
+        document.getElementById("scope").textContent = data.scope || "";
+        document.getElementById("figma-action").hidden = !data.figmaUrl;
+      }
+
+      window.addEventListener("message", (event) => {
+        if (event.source !== window.parent) return;
+        const message = event.data;
+        if (!message || message.jsonrpc !== "2.0") return;
+        if (message.id !== undefined && pending.has(message.id)) {
+          const entry = pending.get(message.id);
+          pending.delete(message.id);
+          if (message.error) entry.reject(message.error); else entry.resolve(message.result);
+          return;
+        }
+        if (message.method === "ui/notifications/tool-result") render(message.params?.structuredContent);
+      }, { passive: true });
+
+      document.querySelectorAll("[data-action]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          if (!issue?.issueId) return;
+          const prompts = {
+            review: `Review the scope and context for ${issue.issueId}. Do not update Linear.`,
+            figma: `Review the Figma context linked from ${issue.issueId}. Do not update Linear.`,
+            comment: `Draft a concise progress comment for ${issue.issueId}. Do not post it.`,
+            field: `I want to change a field on ${issue.issueId}. Ask which field and value, then wait for explicit approval before updating Linear.`,
+          };
+          await request("ui/message", { message: prompts[button.dataset.action] });
+        });
+      });
+    </script>
+  </body>
+</html>

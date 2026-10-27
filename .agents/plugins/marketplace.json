@@ -1,0 +1,13 @@
+{
+  "name": "linear-work-tracker",
+  "interface": { "displayName": "Linear Work Tracker" },
+  "plugins": [
+    {
+      "name": "linear-issue-action-panel",
+      "source": { "source": "local", "path": "./plugins/linear-issue-action-panel" },
+      "interface": { "displayName": "Linear Issue Action Panel" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Productivity"
+    }
+  ]
+}
