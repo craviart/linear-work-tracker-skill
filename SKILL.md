@@ -13,6 +13,10 @@ Use this skill when beginning or continuing substantive work such as implementat
 
 ## Find the work item first
 
+### Linear CLI network access
+
+In local Codex environments where the workspace sandbox cannot resolve `api.linear.app`, use the host-network execution path for Linear CLI reads. Do not stop after a sandbox DNS failure or ask the user to retry later if host-network execution is available. Retry the same read-only command outside the sandbox with a concise justification, then report a network blocker only if that attempt also fails. This changes only the network path for reads; all Linear writes still require the user's explicit authorization.
+
 Before material work begins, establish whether a related Linear issue already exists.
 
 1. If the user names an issue or the current branch identifies one, inspect that issue first with `linear issue view <issue-id> --no-pager`.
