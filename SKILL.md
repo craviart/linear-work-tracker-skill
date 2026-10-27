@@ -11,7 +11,7 @@ Keep the user's substantive work traceable in Linear without turning routine con
 
 Use this skill when beginning or continuing substantive work such as implementation, debugging, design, research, a deliverable, or a production change. Do not use it for a simple answer, a minor rewrite, a casual question, or when the user says not to track the work.
 
-If the user sends only a Linear issue identifier or URL, treat it as a request to inspect that issue. Return a concise summary, then render three or four contextual next actions as separate `:codex-followup` items. Each action needs a short visible label and a complete prompt. Do not end with a plain-language question instead of these actions. Offer only actions that fit the issue, such as reviewing its design context, refining scope, drafting an update, or preparing a supported field change. Keep all external writes subject to explicit user authorization.
+If the user sends only a Linear issue identifier or URL, treat it as a request to inspect that issue. Return a concise summary, then render three or four contextual next actions using the literal, unescaped format `- :codex-followup[Visible action]{prompt="Complete action prompt"}`. Emit each directive directly in the final response, outside code fences. Do not render ordinary Markdown bullets or end with a plain-language question instead. Offer only actions that fit the issue, such as reviewing its design context, refining scope, drafting an update, or preparing a supported field change. Keep all external writes subject to explicit user authorization.
 
 ## Find the work item first
 
