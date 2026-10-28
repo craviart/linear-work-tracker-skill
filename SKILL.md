@@ -7,6 +7,14 @@ description: Track substantive agent work in Linear by finding an existing relat
 
 Keep the user's substantive work traceable in Linear without turning routine conversation into ticket noise.
 
+## Local Linear access
+
+For local Codex agents, use the `linear-operations` MCP tools first. They run through the host-side local plugin runtime, where the authenticated Linear CLI and DNS are available. Start a new session with `linear_health` when access matters, then use typed tools such as `linear_issue_view`, `linear_issue_search`, `linear_team_labels`, and `linear_team_cycles`.
+
+Do not treat an unavailable sandbox `linear` command or a sandbox DNS failure as proof that Linear is unavailable. Direct CLI commands are a diagnostic fallback only. If `linear_health` reports `AUTH_REQUIRED`, ask Camille to run `linear auth login` locally, then rerun the health check. If it reports `NETWORK_UNAVAILABLE`, report the host-network or VPN blocker precisely.
+
+The write tools, `linear_issue_create`, `linear_issue_update`, and `linear_issue_comment_create`, are typed operations. Call one only after Camille explicitly authorizes that specific Linear change. Never use a generic command runner.
+
 ## When to use
 
 Use this skill when beginning or continuing substantive work such as implementation, debugging, design, research, a deliverable, or a production change. Do not use it for a simple answer, a minor rewrite, a casual question, or when the user says not to track the work.

@@ -18,18 +18,20 @@ git -C "$HOME/.agents/skills/linear-work-tracker" pull --ff-only
 
 Codex detects skill-file changes automatically. Restart Codex if the updated skill does not appear.
 
-## Interactive issue actions
+## Reliable local Linear access
 
-The `Linear Issue Action Panel` local plugin renders a compact issue card with buttons for reviewing the brief, drafting a progress comment, and preparing a field change. It uses the locally authenticated Linear CLI and never writes to Linear from a button click.
+The `Linear Operations` local plugin is the supported route for all local Codex agents. It executes the authenticated local CLI from the host-side plugin runtime, avoiding the workspace sandbox DNS restriction. It provides a health check, typed issue reads and searches, team metadata reads, and typed create, update, and comment tools. It never exposes an arbitrary CLI command runner.
+
+The included issue action panel renders a compact issue card with buttons for reviewing the brief, drafting a progress comment, and preparing a field change. A button never writes to Linear.
 
 From this repository, add the local marketplace and install the plugin:
 
 ```sh
 codex plugin marketplace add .
-codex plugin add linear-issue-action-panel@linear-work-tracker
+codex plugin add linear-operations@linear-work-tracker
 ```
 
-Restart Codex after installation, then open a new local chat and send a bare issue ID such as `DST-380`.
+Restart Codex after installation, then open a new local chat and run `linear_health`. If authentication has expired, run `linear auth login` in a local terminal, then rerun the health check.
 
 ## Source of truth
 
