@@ -1,0 +1,4 @@
+interface:
+  display_name: "Linear Work Tracker"
+  short_description: "Keep substantive work linked to Linear"
+  default_prompt: "Use $linear-work-tracker to link this work to Linear."
